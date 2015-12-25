@@ -9,15 +9,18 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.mio.jrdv.pushsenderjrdvsoft.model.CustomArrayAdapter;
+import com.mio.jrdv.pushsenderjrdvsoft.model.Vecino;
 import com.mio.jrdv.pushsenderjrdvsoft.parse.AppConfig;
 import com.mio.jrdv.pushsenderjrdvsoft.parse.ParseUtils;
 import com.parse.FindCallback;
@@ -29,7 +32,6 @@ import com.parse.ParseQuery;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -45,11 +47,27 @@ public class MainActivity extends AppCompatActivity {
 
 
     //par el spinner
-    private List<ParseObject> ComunidadListParaSpinner;
+
     private List<String> NombreComunudadListParaspinner;
     private Spinner VecinosSpinner;
 
 
+    //Para la listView:
+    // ArrayList for Listview
+    private List<ParseObject> ComunidadListParaSpinner;//Aquie se guaradan TODOS!!! los vecinos en un Array pero en PArse!!!
+
+    private List<Vecino> ListaDeTodosVecinosOKParaListView;
+
+    private  CustomArrayAdapter adapter;
+
+
+
+    // List view
+    private ListView listViewdevecinos;
+
+
+    // Search EditText
+    EditText inputSearch;
 
 
     //para el Query de la comunidad segun eltexto del spinner:
@@ -57,11 +75,32 @@ public class MainActivity extends AppCompatActivity {
     private String Comunidad;
     private List<String> ListemailParaPushdesdeComunidad;
 
+    //Paa Oner el nombre de la comunidad en el buton:
+
+    private Button comunidadButton;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        //un progressdialog que haremos visible al ahacer cualquer query
+
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+
         super.onCreate(savedInstanceState);
+
+
+
+
+
         setContentView(R.layout.activity_main);
+
+
+        //definimos el button de la comunidad
+
+        comunidadButton=(Button)findViewById(R.id.BotonEnvioSoloComunidad);
+
 
 
         Intent intent = new Intent(this, com.mio.jrdv.pushsenderjrdvsoft.LoginActivity.class);
@@ -71,8 +110,9 @@ public class MainActivity extends AppCompatActivity {
         //seguimos
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        //setSupportActionBar(toolbar);//asi no sale le botona atras
-
+        //setSupportActionBar(toolbar);
+        //getSupportActionBar().setTitle("PUSH SENDER JRDVSOFT");
+        // getSupportActionBar().setDisplayHomeAsUpEnabled(true);//sin esto no sale botn atras
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -106,29 +146,33 @@ public class MainActivity extends AppCompatActivity {
         //definmos el spinner
         VecinosSpinner = (Spinner) findViewById(R.id.VecinoSpinner);
 
+
+
+        //hacemos un refresh de las comunidades:
+        FiltrarComunidades();
+
+
+        //Rellenamos la listViewDeVecinos y  el Find:(aqui ya s supone que le List de ListaDeTodosVecinosOKParaListView ya esta lleno!!
+
+        listViewdevecinos = (ListView) findViewById(R.id.listviewDevecinos);
+        inputSearch = (EditText) findViewById(R.id.search);
+
+
+
+        //listViewdevecinos.setAdapter(new CustomArrayAdapter(this, ListaDeTodosVecinosOKParaListView));
+
+        adapter=new CustomArrayAdapter(this, ListaDeTodosVecinosOKParaListView);
+        listViewdevecinos.setAdapter(adapter);
+
+
+
+
+
+
+
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 
     public void butonenviarPushaTodos(View view) throws ParseException {
 
@@ -153,6 +197,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+   /*
+
+   //esto ya no fuinciona desde esta apk!! solo desde ghfincas...npi de porque pero me da =
+
     public void CreaVecino(View view) {
 
         //vamos a crear en Parse un nuevo vecino aleatorio:
@@ -169,58 +217,16 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void butonFiltroEnLog(View view) {
-
-        //vamos a probar filtros:
-
-        //vamos a hacer un query:
-        /*
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("GameScore");
-        query.whereEqualTo("playerName", "Dan Stemkoski");
-        query.findInBackground(new FindCallback<ParseObject>() {
-                     public void done(List<ParseObject> scoreList, ParseException e) {
-                         if (e == null) {
-                                   Log.d("score", "Retrieved " + scoreList.size() + " scores");
-                             } else {
-                              Log.d("score", "Error: " + e.getMessage());
-                     }
-                       }
-                    });
-
-         */
-
-        /*
-        //y asi se hace el push selctivo:
-
-        // Send push notification to query
-              ParsePush push = new ParsePush();
-                push.setQuery(pushQuery); // Set our Installation query
-               push.setMessage("Willie Hayes injured by own pop fly.");
-                push.sendInBackground();
-         */
-
-        //asi seria con un array de emails
-        /*
-
-        String[] names = {"Jonathan Walsh", "Dario Wunsch", "Shawn Simon"};
-        query.whereContainedIn("playerName", Arrays.asList(names));
-         */
-
-/*
-         ParseQuery<ParseObject> query = ParseQuery.getQuery(AppConfig.PARSE_CHANNEL);
-
-
-
-        String[] names = {"dgayurt@gmail.com", "info@lopidoyo.com", "hola2@gmail.com"};
-      // query.whereContainedIn("email", Arrays.asList(names));
-        query.whereEqualTo("email", "info@lopidoyo.com");
-
-
-
 */
 
+    public void FiltrarComunidades(){
+        //ESTO ES UN COPY/PASTE DEL BUTTONFILTROENLOG!!!!
 
         //vamos a sacarlos todos:
+
+        //ponemos el progressbar!!
+
+        setProgressBarIndeterminateVisibility(true);
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery(AppConfig.PARSE_CLASS);
         query.selectKeys(Arrays.asList("email", "comunidad", "nombre", "telefono"));
@@ -233,6 +239,9 @@ public class MainActivity extends AppCompatActivity {
 
         NombreComunudadListParaspinner = new ArrayList<String>();
 
+        //inizizlizamos el ArratLIst para el Adapter del listView:
+
+        ListaDeTodosVecinosOKParaListView = new ArrayList<Vecino>();
 
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> VecinosList, ParseException e) {
@@ -248,7 +257,17 @@ public class MainActivity extends AppCompatActivity {
                         NombreComunudadListParaspinner.add(0, (String) VecinosList.get(i).get("comunidad"));
 
                         Log.d("Que son:", (String) VecinosList.get(i).get("nombre"));
-                        Log.d("Que son:", String.valueOf(VecinosList.get(i).getInt("telefono")));
+                        Log.d("Que son:", String.valueOf(VecinosList.get(i).get("telefono")));
+
+
+                        //y ya de camino rellenamos el array listpara la list View:ListaDeTodosVecinosOKParaListView
+                        Vecino newVecino=new Vecino((String) VecinosList.get(i).get("comunidad"),(String) VecinosList.get(i).get("email"),
+                                (String) VecinosList.get(i).get("nombre"), String.valueOf(VecinosList.get(i).get("telefono")));
+                        ListaDeTodosVecinosOKParaListView.add(newVecino);
+
+
+
+
                     }
 
                     //copiamos el ArryList
@@ -260,6 +279,15 @@ public class MainActivity extends AppCompatActivity {
 
                     RellenarSpinnerComunidades();
 
+                    //paramos el prorgressdialog
+
+                    setProgressBarIndeterminateVisibility(false);
+
+
+                    //refrescamos el listview
+
+                     adapter.notifyDataSetChanged();
+
 
                 } else {
                     Log.d("Vecinos", "Error: " + e.getMessage());
@@ -267,8 +295,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
     }
+
+
 
 
     public void RellenarSpinnerComunidades() {
@@ -309,6 +338,16 @@ public class MainActivity extends AppCompatActivity {
 
                 Log.d("Comunidad", "Elegida: " + Comunidad);
 
+                //uan vez filtradas le ponemos el nombre al boton:
+
+
+                if(Comunidad != null){
+
+                    comunidadButton.setText("Enviar Comunidad: "+Comunidad);
+
+                }
+
+
             }
 
             @Override
@@ -327,7 +366,9 @@ public class MainActivity extends AppCompatActivity {
 
         final String pushTosendText = Text2Push.getText().toString();
 
+        //ponemos el progressbar!!
 
+        setProgressBarIndeterminateVisibility(true);
 
 
         if (!pushTosendText.isEmpty()) {
@@ -377,6 +418,11 @@ public class MainActivity extends AppCompatActivity {
                         Log.e(TAG, "Enviados Push Comunidad" );
 
 
+                        //paramos el prorgressdialog
+
+                        setProgressBarIndeterminateVisibility(false);
+
+
                     } else {
                         Log.d("Comunidad", "Error: " + e.getMessage());
                     }
@@ -384,5 +430,6 @@ public class MainActivity extends AppCompatActivity {
             });
         }
     }
+
 
 }

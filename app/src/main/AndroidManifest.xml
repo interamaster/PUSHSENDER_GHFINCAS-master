@@ -2,12 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.mio.jrdv.pushsenderjrdvsoft">
 
-
     <!-- Parse push notificaciones -->
 
     <uses-permission android:name="android.permission.INTERNET" />
-
-
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.VIBRATE" />
@@ -21,8 +18,8 @@
     <permission
         android:name="com.mio.jrdv.pushsenderjrdvsoft.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
-    <uses-permission android:name="com.mio.jrdv.pushsenderjrdvsoft.permission.C2D_MESSAGE" />
 
+    <uses-permission android:name="com.mio.jrdv.pushsenderjrdvsoft.permission.C2D_MESSAGE" />
 
     <!-- Parse push notificaciones  debajo de aplication pongo el name de la class que extiende Application -->
     <application
@@ -42,21 +39,23 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".LoginActivity"
+        <activity
+            android:name=".LoginActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"
-            />
-        <activity android:name=".CircularBarActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".CircularBarActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.Transparent"></activity>
-
+            android:theme="@style/Theme.Transparent" />
 
         <!-- Added for Parse push notifications -->
 
         <service android:name="com.parse.PushService" />
-        <receiver android:name="com.parse.ParsePushBroadcastReceiver"
+
+        <receiver
+            android:name="com.parse.ParsePushBroadcastReceiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.parse.push.intent.RECEIVE" />
@@ -64,18 +63,18 @@
                 <action android:name="com.parse.push.intent.OPEN" />
             </intent-filter>
         </receiver>
-        <receiver android:name="com.parse.GcmBroadcastReceiver"
+        <receiver
+            android:name="com.parse.GcmBroadcastReceiver"
             android:permission="com.google.android.c2dm.permission.SEND">
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
                 <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
 
-                <!--
-                  IMPORTANT: Change "com.parse.starter" to match your app's package name.
-                -->
+                <!--                   IMPORTANT: Change "com.parse.starter" to match your app's package name. -->
                 <category android:name="com.mio.jrdv.pushsenderjrdvsoft" />
             </intent-filter>
         </receiver>
+
 
     </application>
 
