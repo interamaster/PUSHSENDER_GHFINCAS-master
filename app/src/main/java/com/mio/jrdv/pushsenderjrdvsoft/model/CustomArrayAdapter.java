@@ -1,6 +1,7 @@
 package com.mio.jrdv.pushsenderjrdvsoft.model;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +16,7 @@ import java.util.List;
 /**
  * Created by joseramondelgado on 25/12/15.
  */
-public class CustomArrayAdapter extends ArrayAdapter<Vecino> {
+public class CustomArrayAdapter extends ArrayAdapter<Vecino>  implements View.OnClickListener{
 
     private LayoutInflater layoutInflater;
 
@@ -37,6 +38,7 @@ public class CustomArrayAdapter extends ArrayAdapter<Vecino> {
             convertView = layoutInflater.inflate(R.layout.listview_row, null);
             holder.setTextViewTitle((TextView) convertView.findViewById(R.id.textViewTitle));
             holder.setTextViewSubtitle((TextView) convertView.findViewById(R.id.textViewSubtitle));
+            holder.setCheckBox((CheckBox) convertView.findViewById(R.id.checkBox));
             convertView.setTag(holder);
         }
         else
@@ -47,8 +49,53 @@ public class CustomArrayAdapter extends ArrayAdapter<Vecino> {
         Vecino row = getItem(position);
         holder.getTextViewTitle().setText(row.getComunidad());
         holder.getTextViewSubtitle().setText(row.getNombre());
+
+        holder.getCheckBox().setTag(position);
+        holder.getCheckBox().setChecked(row.isChecked());
+        holder.getCheckBox().setOnClickListener(this);
+
+        //para cambiar el color si esta seleccionada:
+
+        changeBackground(getContext(), holder.getCheckBox());
+
+
         return convertView;
     }
+
+
+
+    @Override
+    public void onClick(View v) {
+
+        CheckBox checkBox = (CheckBox) v;
+        int position = (Integer) v.getTag();
+        getItem(position).setChecked(checkBox.isChecked());
+
+
+        //String msg = this.getContext().getString(R.string.check_toast, position, checkBox.isChecked());
+        //Toast.makeText(this.getContext(), msg, Toast.LENGTH_SHORT).show();
+
+        changeBackground(CustomArrayAdapter.this.getContext(), checkBox);
+
+    }
+
+
+    @SuppressWarnings("deprecation")
+    private void changeBackground(Context context, CheckBox checkBox) {
+        View row = (View) checkBox.getParent();
+        Drawable drawable;
+        context.getResources().getDrawable(
+                R.drawable.listview_selector_checked);
+        if (checkBox.isChecked()) {
+            drawable = context.getResources().getDrawable(
+                    R.drawable.listview_selector_checked);
+        } else {
+            drawable = context.getResources().getDrawable(
+                    R.drawable.listview_selector);
+        }
+        row.setBackgroundDrawable(drawable);
+    }
+
 
     static class Holder
     {

@@ -9,6 +9,8 @@ public class Vecino {
     private String telefono;
     private String email;
     private String comunidad;
+    private boolean checked;
+
 
 
     public Vecino(String comunidad, String email, String nombre, String telefono) {
@@ -16,6 +18,9 @@ public class Vecino {
         this.email = email;
         this.nombre = nombre;
         this.telefono = telefono;
+        this.checked=false;
+
+
     }
 
     public String getComunidad() {
@@ -48,5 +53,13 @@ public class Vecino {
 
     public void setTelefono(String telefono) {
         this.telefono = telefono;
+    }
+
+    public boolean isChecked() {
+        return checked;
+    }
+
+    public void setChecked(boolean checked) {
+        this.checked = checked;
     }
 }
