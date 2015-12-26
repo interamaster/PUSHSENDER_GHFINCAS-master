@@ -74,6 +74,7 @@
 
     <EditText
         android:id="@+id/search"
+        android:hint="Nombre Vecino a Buscar "
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
 

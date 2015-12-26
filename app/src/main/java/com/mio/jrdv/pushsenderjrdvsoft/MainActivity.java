@@ -211,7 +211,10 @@ public class MainActivity extends AppCompatActivity {
                                         }
 
 
+                                    else {
 
+                                    Toast.makeText(MainActivity.this, "NO HAY NINGUN COMUNICADO!!!", Toast.LENGTH_SHORT).show();
+                                }
 
 
                                 }
@@ -344,6 +347,11 @@ public class MainActivity extends AppCompatActivity {
 //            Object subscribedChannels= ParseInstallation.getCurrentInstallation().get("email");///esto devuelve mi email!!!hola2@gmail.com..
 
 
+        }
+
+        else {
+
+            Toast.makeText(MainActivity.this, "NO HAY NINGUN COMUNICADO!!!", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -590,6 +598,11 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             });
+        }
+
+        else {
+
+            Toast.makeText(MainActivity.this, "NO HAY NINGUN COMUNICADO!!!", Toast.LENGTH_SHORT).show();
         }
     }
 
