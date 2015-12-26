@@ -206,12 +206,23 @@ public class CustomArrayAdapter extends ArrayAdapter<Vecino>  implements View.On
         protected void publishResults(CharSequence constraint,
                                       FilterResults results) {
 
+
+            if(results.count==0){
+
+                notifyDataSetInvalidated();
+            }
+            else{
+
+
+
             mDisplayedValues = (ArrayList<Vecino>)results.values;
             notifyDataSetChanged();
             clear();
             for(int i = 0, l = mDisplayedValues.size(); i < l; i++)
                 add(mDisplayedValues.get(i));
             notifyDataSetInvalidated();
+
+            }
         }
     }
 

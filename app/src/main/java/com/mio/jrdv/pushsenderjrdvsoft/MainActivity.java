@@ -264,6 +264,11 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+        //para que suba con el teclado:nonhace nada
+
+       // listViewdevecinos.setTranscriptMode(listViewdevecinos.TRANSCRIPT_MODE_NORMAL);
+        //listViewdevecinos.setStackFromBottom(true);
+
         //listViewdevecinos.setAdapter(new CustomArrayAdapter(this, ListaDeTodosVecinosOKParaListView));
 
 
