@@ -7,23 +7,44 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.Filter;
 import android.widget.TextView;
 
 import com.mio.jrdv.pushsenderjrdvsoft.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by joseramondelgado on 25/12/15.
  */
-public class CustomArrayAdapter extends ArrayAdapter<Vecino>  implements View.OnClickListener{
+public class CustomArrayAdapter extends ArrayAdapter<Vecino>  implements View.OnClickListener  {
 
     private LayoutInflater layoutInflater;
+
+    //para le search:
+
+    private ArrayList<Vecino> mDisplayedValues;    // Values to be displayed
+    private  ArrayList<Vecino>mOriginalValues; // Original Values
+    private Vecinosfilter filter;
+
+
 
     public CustomArrayAdapter(Context context, List<Vecino> objects)
     {
         super(context, 0, objects);
         layoutInflater = LayoutInflater.from(context);
+
+
+        //para el search
+        this.mOriginalValues= new ArrayList<Vecino>(objects);
+
+
+        this.mDisplayedValues=new ArrayList<Vecino>(objects);
+
+
+
+
     }
 
     @Override
@@ -132,5 +153,76 @@ public class CustomArrayAdapter extends ArrayAdapter<Vecino>  implements View.On
         }
 
     }
+
+
+    //Para el filtrado
+
+    @Override
+    public Filter getFilter() {
+        if (filter == null){
+            filter  = new Vecinosfilter();
+        }
+        return filter;
+    }
+
+
+
+
+
+    private class Vecinosfilter extends Filter
+    {
+
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+
+            constraint = constraint.toString().toLowerCase();
+            FilterResults result = new FilterResults();
+            if(constraint != null && constraint.toString().length() > 0)
+            {
+                ArrayList<Vecino> filteredItems = new ArrayList<Vecino>();
+
+                for(int i = 0, l = mOriginalValues.size(); i < l; i++)
+                {
+                    Vecino country = mOriginalValues.get(i);
+                    if(country.getNombre().toLowerCase().contains(constraint))
+                        filteredItems.add(country);
+                }
+                result.count = filteredItems.size();
+                result.values = filteredItems;
+            }
+            else
+            {
+                synchronized(this)
+                {
+                    result.values = mOriginalValues;
+                    result.count = mOriginalValues.size();
+                }
+            }
+            return result;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        protected void publishResults(CharSequence constraint,
+                                      FilterResults results) {
+
+            mDisplayedValues = (ArrayList<Vecino>)results.values;
+            notifyDataSetChanged();
+            clear();
+            for(int i = 0, l = mDisplayedValues.size(); i < l; i++)
+                add(mDisplayedValues.get(i));
+            notifyDataSetInvalidated();
+        }
+    }
+
+
+
+
+
+
+
+    /////////////////////////////////////////
+
+
 
 }

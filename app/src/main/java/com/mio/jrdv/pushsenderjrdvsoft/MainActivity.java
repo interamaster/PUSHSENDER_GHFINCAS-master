@@ -8,6 +8,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -118,12 +120,112 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Snackbar snackbar =Snackbar.make(view, "Enviar Comunicacion a  Vecinos Seleccionados", Snackbar.LENGTH_LONG)
+                        .setAction("OK", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Snackbar snackbar1 = Snackbar.make(view, "Enviando Comunicados...", Snackbar.LENGTH_SHORT);
+                                snackbar1.show();
+
+
+                                //hacemos el filtrado de los vecinos que tengan el checked a true los metemso en otro array solo de emails
+                                //y se lanza el push:
+
+
+                                //Aqui enviaremos solo ala comunidad selccionada y si hay un texto:
+
+                                final String pushTosendText = Text2Push.getText().toString();
+
+                                //ponemos el progressbar!!
+
+                                setProgressBarIndeterminateVisibility(true);
+
+
+                                if (!pushTosendText.isEmpty()) {
+                                    Log.e(TAG, "Enviando Push Vecinos Elegidos con texto: " + pushTosendText);
+
+
+
+
+                                                //inizializamos un  array que guardara los emails de los vecinos legidos a mano:
+
+                                                List<String> VecinosAmanoParaPush = new ArrayList<String>();
+
+
+                                                for (int i = 0; i < ListaDeTodosVecinosOKParaListView.size(); i++) {
+
+
+                                                    Vecino VecinoCheked= ListaDeTodosVecinosOKParaListView.get(i);
+
+                                                    if (VecinoCheked.isChecked()){
+
+                                                        //un vecino que si esta checked lo ñadimos al Array:
+
+                                                        Log.d("Esta chekced a true:", VecinoCheked.getNombre());
+
+                                                        VecinosAmanoParaPush.add(0,VecinoCheked.getEmail());
+
+
+                                                    }
+
+
+
+                                                    //poenmos esos email de esa comunidad àar enviarloa asi:
+                                                    // String[] names = {"Jonathan Walsh", "Dario Wunsch", "Shawn Simon"};
+                                                    // query.whereContainedIn("playerName", Arrays.asList(names));
+
+                                                    // //añado la comunidad al arrylist de strings:
+                                                    //  NombreComunudadListParaspinner.add(0, (String) VecinosList.get(i).get("comunidad"));
+
+
+                                                }
+
+
+                                                    if (VecinosAmanoParaPush.size()>=1) {
+
+                                                        // Find devices associated with these comunidades
+                                                        ParseQuery pushQuery = ParseInstallation.getQuery();
+                                                        // pushQuery.whereMatchesQuery("email", queryemailsdeComunidad);//asi no va porque el query es de la Class vecino !!nod e installation
+
+                                                        pushQuery.whereContainedIn("email", VecinosAmanoParaPush);
+
+
+                                                        // Send push notification to query
+                                                        ParsePush push = new ParsePush();
+                                                        push.setQuery(pushQuery); // Set our Installation query
+                                                        push.setMessage(pushTosendText);
+                                                        push.sendInBackground();
+
+                                                        Log.e(TAG, "Enviados Push A vecinos Selccionados");
+
+
+                                                        //paramos el prorgressdialog
+
+                                                        setProgressBarIndeterminateVisibility(false);
+                                                    }
+
+                                                    else {
+                                                        Toast.makeText(MainActivity.this, "NO HAS SELCCIONADO NINGUN VECINO!!!", Toast.LENGTH_SHORT).show();
+                                                    }
+
+                                        }
+
+
+
+
+
+                                }
+
+
+
+
+                        });
+
+                snackbar.show();
+
+
             }
         });
-
-        //definimos los TextViews
 
 
         Text2Push = (EditText) findViewById(R.id.TextoTopush);
@@ -161,8 +263,16 @@ public class MainActivity extends AppCompatActivity {
 
         //listViewdevecinos.setAdapter(new CustomArrayAdapter(this, ListaDeTodosVecinosOKParaListView));
 
+
+        /*
         adapter=new CustomArrayAdapter(this, ListaDeTodosVecinosOKParaListView);
         listViewdevecinos.setAdapter(adapter);
+    */
+
+
+        //enables filtering for the contents of the given ListView
+        listViewdevecinos.setTextFilterEnabled(true);
+
 
 
         listViewdevecinos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -177,6 +287,36 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+
+        //Parael Search:
+
+        inputSearch.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void onTextChanged(CharSequence cs, int arg1, int arg2, int arg3) {
+                // When user changed the Text
+               // MainActivity.this.adapter.getFilter().filter(cs);
+
+               // String text = inputSearch.getText().toString().toLowerCase(Locale.getDefault());
+              //  adapter.filter(text);
+                adapter.getFilter().filter(cs.toString());
+
+
+
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence arg0, int arg1, int arg2,
+                                          int arg3) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable arg0) {
+                // TODO Auto-generated method stub
+            }
+        });
 
 
 
@@ -294,6 +434,8 @@ public class MainActivity extends AppCompatActivity {
                     setProgressBarIndeterminateVisibility(false);
 
 
+
+
                     //refrescamos el listview
 
                      adapter.notifyDataSetChanged();
@@ -311,6 +453,16 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void RellenarSpinnerComunidades() {
+
+
+
+
+        //aqui ya podemos rellenar el lsitView:
+
+
+        adapter=new CustomArrayAdapter(this, ListaDeTodosVecinosOKParaListView);
+        listViewdevecinos.setAdapter(adapter);
+
 
 
         //una vez sabidos lo ponemos en le spinner:NombreComunudadListParaspinner
