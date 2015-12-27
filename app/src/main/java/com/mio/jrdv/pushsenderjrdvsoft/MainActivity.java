@@ -32,6 +32,9 @@ import com.parse.ParseObject;
 import com.parse.ParsePush;
 import com.parse.ParseQuery;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
@@ -193,7 +196,17 @@ public class MainActivity extends AppCompatActivity {
                                                         // Send push notification to query
                                                         ParsePush push = new ParsePush();
                                                         push.setQuery(pushQuery); // Set our Installation query
-                                                        push.setMessage(pushTosendText);
+
+                                                        //push.setMessage(pushTosendText);//lo hacemos como JSON:
+
+                                                        JSONObject JSONOK= null;
+                                                        try {
+                                                            JSONOK = Text2Json(pushTosendText);
+                                                        } catch (JSONException e) {
+                                                            e.printStackTrace();
+                                                        }
+
+                                                        push.setData(JSONOK);
                                                         push.sendInBackground();
 
                                                         Log.e(TAG, "Enviados Push A vecinos Selccionados");
@@ -331,8 +344,52 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    public JSONObject Text2Json  (String TExttoSendAsString) throws JSONException {
 
-    public void butonenviarPushaTodos(View view) throws ParseException {
+        //aqui recibimos el text:TExttoSendAsString(que es el del push
+
+
+
+
+        JSONObject jsonfinal = new JSONObject();
+        JSONObject jsondata=new JSONObject();
+
+
+
+
+        //aqui le jsondata:
+
+        jsondata.put("message",TExttoSendAsString);
+        jsondata.put("title","GHFINCAS");
+
+
+        jsonfinal.put("data",jsondata);
+
+        jsonfinal.put("is_background",false);
+
+
+
+
+
+
+        try {
+
+            Log.d("My App", jsonfinal.toString());
+
+        } catch (Throwable t) {
+            Log.e("My App", "Could not parse malformed JSON:");
+        }
+
+
+        //devolvemos el json
+        return  jsonfinal;
+
+
+    }
+
+
+
+    public void butonenviarPushaTodos(View view) throws ParseException, JSONException {
 
         ParsePush push = new ParsePush();
         push.setChannel(AppConfig.PARSE_CHANNEL);
@@ -343,7 +400,14 @@ public class MainActivity extends AppCompatActivity {
         if (!pushTosendText.isEmpty()) {
             Log.e(TAG, "Enviado Push a todos....:" + pushTosendText);
 
-            push.setMessage(pushTosendText);
+            //push.setMessage(pushTosendText);
+            //push.setData();//un JSON se envia asi
+
+            JSONObject JSONOK=Text2Json(pushTosendText);
+
+            push.setData(JSONOK);
+
+
             push.sendInBackground();
 
             // List<ParseObject> subscribedChannels= ParseInstallation.getCurrentInstallation().getList("channels");//esto devuelve 1 !!=GHFINCAS
@@ -587,7 +651,21 @@ public class MainActivity extends AppCompatActivity {
                         // Send push notification to query
                         ParsePush push = new ParsePush();
                         push.setQuery(pushQuery); // Set our Installation query
-                        push.setMessage(pushTosendText);
+
+
+                       // push.setMessage(pushTosendText); lo mandamso como JSON
+
+
+                        JSONObject JSONOK= null;
+                        try {
+                            JSONOK = Text2Json(pushTosendText);
+                        } catch (JSONException e1) {
+                            e1.printStackTrace();
+                        }
+
+                        push.setData(JSONOK);
+
+
                         push.sendInBackground();
 
                         Log.e(TAG, "Enviados Push Comunidad" );
