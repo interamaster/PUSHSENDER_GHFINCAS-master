@@ -152,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
                                     Log.e(TAG, "Enviando Push Vecinos Elegidos con texto: " + pushTosendText);
 
 
-                                                 snackbar1.show();
+
 
                                                 //inizializamos un  array que guardara los emails de los vecinos legidos a mano:
 
@@ -189,6 +189,8 @@ public class MainActivity extends AppCompatActivity {
 
 
                                                     if (VecinosAmanoParaPush.size()>=1) {
+
+                                                        snackbar1.show();
 
                                                         // Find devices associated with these comunidades
                                                         ParseQuery pushQuery = ParseInstallation.getQuery();
