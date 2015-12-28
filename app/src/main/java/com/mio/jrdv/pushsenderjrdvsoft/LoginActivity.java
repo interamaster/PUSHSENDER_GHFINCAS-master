@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.ParcelUuid;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -22,6 +23,8 @@ public class LoginActivity extends AppCompatActivity {
     public static final String PREF_EMAIL = "email";//sera el user name
     public static final String PREF_PASSWORD = "password";
     public static final String PREF_BOOL_LOGINYAOK ="false";
+    public static final String PREF_NUMERO_DEARRANQUES="1";
+
 
 
 
@@ -76,6 +79,29 @@ public class LoginActivity extends AppCompatActivity {
 
         String email = pref.getString(PREF_EMAIL, null);//esto devolvera el nombre si existe o null!!
         String password = pref.getString(PREF_PASSWORD, null);
+
+
+
+        //para eñ nuemro de arranques y poner o no la ayda inicial
+
+        int nuemArranuesParaayuda=pref.getInt(PREF_NUMERO_DEARRANQUES,1);
+
+        Log.d(TAG, "numero de arranques:"+nuemArranuesParaayuda);
+        nuemArranuesParaayuda++;
+
+
+        //guardamos el numeor de arranues
+
+        // We need an editor object to make changes
+        SharedPreferences.Editor edit = pref.edit();
+        edit.putInt(LoginActivity.PREF_NUMERO_DEARRANQUES, nuemArranuesParaayuda);
+
+
+        // Commit the changes
+        edit.commit();
+
+
+
 
 
         boolean alreadyloggedinbefore =  pref.getBoolean(PREF_BOOL_LOGINYAOK, false);

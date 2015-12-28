@@ -23,6 +23,10 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.github.amlcurran.showcaseview.OnShowcaseEventListener;
+import com.github.amlcurran.showcaseview.ShowcaseView;
+import com.github.amlcurran.showcaseview.targets.Target;
+import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.mio.jrdv.pushsenderjrdvsoft.model.CustomArrayAdapter;
 import com.mio.jrdv.pushsenderjrdvsoft.model.Vecino;
 import com.mio.jrdv.pushsenderjrdvsoft.parse.AppConfig;
@@ -42,7 +46,7 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements OnShowcaseEventListener {
 
     //V0.4 initial spinner relleno al darle a filtro en Log(pte hacer en oncreate, o en refresh)
     //funciona el envio a todos y el envio selctivo a comunidad selccionada en spinner
@@ -347,6 +351,108 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+
+
+
+        //*****************************************************************************************
+        //***************************HELP INTRO!!!!!**************************************
+        //*****************************************************************************************
+        //*****************************************************************************************
+
+
+
+        int nuemArranuesParaayuda=pref.getInt(LoginActivity.PREF_NUMERO_DEARRANQUES,1);
+
+        if (nuemArranuesParaayuda <=3){
+
+            //solo lo hara las 3 primeras veces!!!
+
+
+
+        Target viewTarget = new ViewTarget(R.id.fab, this);
+        ShowcaseView sc=new ShowcaseView.Builder(this)
+                .setTarget(viewTarget)
+                .setContentTitle("VECINO")
+                .setContentText("AL PULSAR ESTE BOTON SOLO SE ENVIARA AL/A LOS VECINOS ELEGIDOS")
+                //singleShot(42)
+                .setShowcaseEventListener(this)
+                .setStyle(R.style.CustomShowcaseTheme2)
+                .replaceEndButton(R.layout.view_custom_button)
+                .build();
+
+        sc.setTag(2);
+
+        }
+
+    }
+
+
+
+    //********************************************del help:
+
+
+    @Override
+    public void onShowcaseViewHide(ShowcaseView showcaseView) {
+        //cuando se cieera se llama esto:
+
+    }
+
+    @Override
+    public void onShowcaseViewDidHide(ShowcaseView showcaseView) {
+
+
+
+        Log.e(TAG, "Showcasedidhide TAG:"+showcaseView.getTag() );
+
+
+        if (showcaseView.getTag()==2 ){
+
+            Target viewTarget2 = new ViewTarget(R.id.BotonEnvioSoloComunidad, this);
+            ShowcaseView sc2= new ShowcaseView.Builder(this)
+                    .setTarget(viewTarget2)
+                    .setContentTitle("COMUNIDAD")
+                    .setContentText("AL PULSAR ESTE BOTON SOLO SE ENVIARA A TODOS LOS VECINOS DE LA COMUNIDAD ELEGIDA")
+                    // .singleShot(43)
+                    .setStyle(R.style.CustomShowcaseTheme2)
+                    .replaceEndButton(R.layout.view_custom_button)
+                    .setShowcaseEventListener(this)
+                    .setStyle(R.style.CustomShowcaseTheme2)
+                    .replaceEndButton(R.layout.view_custom_button)
+                    .build();
+
+            sc2.setTag(3);
+
+        }
+
+        else if  (showcaseView.getTag()==3 ){
+
+            //es el tercer help!!
+
+            Target viewTarget3 = new ViewTarget(R.id.botonTodos, this);
+            ShowcaseView sc2= new ShowcaseView.Builder(this)
+
+                    .setTarget(viewTarget3)
+                    .setContentTitle("TODOS")
+                    .setContentText("AL PULSAR ESTE BOTON SOLO SE ENVIARA A TODOS LOS VECINOS QUE TENGAN  INSTALADA GHFINCAS")
+                    //.singleShot(44)
+                    .setStyle(R.style.CustomShowcaseTheme2)
+                    .replaceEndButton(R.layout.view_custom_button)
+                    .setShowcaseEventListener(this)
+                    .setStyle(R.style.CustomShowcaseTheme2)
+                    .replaceEndButton(R.layout.view_custom_button)
+                    .build();
+
+            sc2.setTag(4);
+
+        }
+
+
+
+
+    }
+
+    @Override
+    public void onShowcaseViewShow(ShowcaseView showcaseView) {
 
     }
 
