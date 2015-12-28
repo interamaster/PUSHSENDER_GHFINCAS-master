@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements OnShowcaseEventLi
     //funciona el envio a todos y el envio selctivo a comunidad selccionada en spinner
     //v08 push selctivo OK
     //v085 push con JSON en lugar de text ok
+    //v0.99 cambiaods icnos, colores y añadida ayuda
 
 
 
