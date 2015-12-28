@@ -1,11 +1,13 @@
 package com.mio.jrdv.pushsenderjrdvsoft;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -44,6 +46,8 @@ public class MainActivity extends AppCompatActivity {
 
     //V0.4 initial spinner relleno al darle a filtro en Log(pte hacer en oncreate, o en refresh)
     //funciona el envio a todos y el envio selctivo a comunidad selccionada en spinner
+    //v08 push selctivo OK
+    //v085 push con JSON en lugar de text ok
 
 
 
@@ -128,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onClick(View view) {
                                 Snackbar snackbar1 = Snackbar.make(view, "Enviando Comunicados...", Snackbar.LENGTH_SHORT);
-                                snackbar1.show();
+                                //snackbar1.show();
 
 
                                 //hacemos el filtrado de los vecinos que tengan el checked a true los metemso en otro array solo de emails
@@ -148,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
                                     Log.e(TAG, "Enviando Push Vecinos Elegidos con texto: " + pushTosendText);
 
 
-
+                                                 snackbar1.show();
 
                                                 //inizializamos un  array que guardara los emails de los vecinos legidos a mano:
 
@@ -219,6 +223,7 @@ public class MainActivity extends AppCompatActivity {
 
                                                     else {
                                                         Toast.makeText(MainActivity.this, "NO HAS SELCCIONADO NINGUN VECINO!!!", Toast.LENGTH_SHORT).show();
+
                                                     }
 
                                         }
@@ -391,29 +396,66 @@ public class MainActivity extends AppCompatActivity {
 
     public void butonenviarPushaTodos(View view) throws ParseException, JSONException {
 
-        ParsePush push = new ParsePush();
-        push.setChannel(AppConfig.PARSE_CHANNEL);
-
         String pushTosendText = Text2Push.getText().toString();
 
-
         if (!pushTosendText.isEmpty()) {
-            Log.e(TAG, "Enviado Push a todos....:" + pushTosendText);
-
-            //push.setMessage(pushTosendText);
-            //push.setData();//un JSON se envia asi
-
-            JSONObject JSONOK=Text2Json(pushTosendText);
-
-            push.setData(JSONOK);
 
 
-            push.sendInBackground();
+            new AlertDialog.Builder(this)
+                    .setTitle("PUSH A TODOS!!")
+                    .setMessage("Seguro que quieres enviar PUSH a TODOS los vecinos?")
+                    .setIcon(-1).setIcon(R.drawable.logo7alert32)
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            // continue with delete
 
-            // List<ParseObject> subscribedChannels= ParseInstallation.getCurrentInstallation().getList("channels");//esto devuelve 1 !!=GHFINCAS
+
+                            ParsePush push = new ParsePush();
+                            push.setChannel(AppConfig.PARSE_CHANNEL);
+
+                            String pushTosendText = Text2Push.getText().toString();
+
+
+
+                            Log.e(TAG, "Enviado Push a todos....:" + pushTosendText);
+
+                            //push.setMessage(pushTosendText);
+                            //push.setData();//un JSON se envia asi
+
+                            JSONObject JSONOK= null;
+                            try {
+                                JSONOK = Text2Json(pushTosendText);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+                            push.setData(JSONOK);
+
+
+                           push.sendInBackground();
+
+                            // List<ParseObject> subscribedChannels= ParseInstallation.getCurrentInstallation().getList("channels");//esto devuelve 1 !!=GHFINCAS
 
 
 //            Object subscribedChannels= ParseInstallation.getCurrentInstallation().get("email");///esto devuelve mi email!!!hola2@gmail.com..
+
+
+                        }
+                    })
+                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            // do nothing
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+
+
+
+
+
+
+
 
 
         }
@@ -611,76 +653,111 @@ public class MainActivity extends AppCompatActivity {
 
 
         if (!pushTosendText.isEmpty()) {
-            Log.e(TAG, "Enviando Push Comunidad.:" + Comunidad + "con texto: " + pushTosendText);
 
 
-            final ParseQuery<ParseObject> queryemailsdeComunidad = ParseQuery.getQuery(AppConfig.PARSE_CLASS);
-            queryemailsdeComunidad.whereEqualTo("comunidad", Comunidad);
-            queryemailsdeComunidad.findInBackground(new FindCallback<ParseObject>() {
-                public void done(List<ParseObject> VecinosListParaComunidadElegida, ParseException e) {
-                    if (e == null) {
-                        Log.d("Comunidad", "Total: " + VecinosListParaComunidadElegida.size() + " Emails");
 
-                        //inizializamos el array que guardara los emails para chequear con instalaation y poder enviarlos
-                        ListemailParaPushdesdeComunidad = new ArrayList<String>();
+            new AlertDialog.Builder(this)
+                    .setTitle("PUSH SOLO A COMUNIDAD")
+                    .setMessage("Seguro quieres enviar push a todos los vecinos de la Comunidad: "+Comunidad+"?")
+                    .setIcon(-1).setIcon(R.drawable.logo7alert32)
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            // continue with delete
 
 
-                        for (int i = 0; i < VecinosListParaComunidadElegida.size(); i++) {
-                            Log.d("Que tienen email:", (String) VecinosListParaComunidadElegida.get(i).get("email"));
 
-                            //poenmos esos email de esa comunidad àar enviarloa asi:
-                           // String[] names = {"Jonathan Walsh", "Dario Wunsch", "Shawn Simon"};
-                           // query.whereContainedIn("playerName", Arrays.asList(names));
 
-                            // //añado la comunidad al arrylist de strings:
-                          //  NombreComunudadListParaspinner.add(0, (String) VecinosList.get(i).get("comunidad"));
 
-                            ListemailParaPushdesdeComunidad.add(0,(String) VecinosListParaComunidadElegida.get(i).get("email"));
+                            Log.e(TAG, "Enviando Push Comunidad.:" + Comunidad + "con texto: " + pushTosendText);
+
+
+                            final ParseQuery<ParseObject> queryemailsdeComunidad = ParseQuery.getQuery(AppConfig.PARSE_CLASS);
+                            queryemailsdeComunidad.whereEqualTo("comunidad", Comunidad);
+                            queryemailsdeComunidad.findInBackground(new FindCallback<ParseObject>() {
+                                public void done(List<ParseObject> VecinosListParaComunidadElegida, ParseException e) {
+                                    if (e == null) {
+                                        Log.d("Comunidad", "Total: " + VecinosListParaComunidadElegida.size() + " Emails");
+
+                                        //inizializamos el array que guardara los emails para chequear con instalaation y poder enviarlos
+                                        ListemailParaPushdesdeComunidad = new ArrayList<String>();
+
+
+                                        for (int i = 0; i < VecinosListParaComunidadElegida.size(); i++) {
+                                            Log.d("Que tienen email:", (String) VecinosListParaComunidadElegida.get(i).get("email"));
+
+                                            //poenmos esos email de esa comunidad àar enviarloa asi:
+                                            // String[] names = {"Jonathan Walsh", "Dario Wunsch", "Shawn Simon"};
+                                            // query.whereContainedIn("playerName", Arrays.asList(names));
+
+                                            // //añado la comunidad al arrylist de strings:
+                                            //  NombreComunudadListParaspinner.add(0, (String) VecinosList.get(i).get("comunidad"));
+
+                                            ListemailParaPushdesdeComunidad.add(0,(String) VecinosListParaComunidadElegida.get(i).get("email"));
+
+                                        }
+
+
+                                        // Find devices associated with these comunidades
+                                        ParseQuery pushQuery = ParseInstallation.getQuery();
+                                        // pushQuery.whereMatchesQuery("email", queryemailsdeComunidad);//asi no va porque el query es de la Class vecino !!nod e installation
+
+                                        pushQuery.whereContainedIn("email",ListemailParaPushdesdeComunidad);
+
+
+
+                                        // Send push notification to query
+                                        ParsePush push = new ParsePush();
+                                        push.setQuery(pushQuery); // Set our Installation query
+
+
+                                        // push.setMessage(pushTosendText); lo mandamso como JSON
+
+
+                                        JSONObject JSONOK= null;
+                                        try {
+                                            JSONOK = Text2Json(pushTosendText);
+                                        } catch (JSONException e1) {
+                                            e1.printStackTrace();
+                                        }
+
+                                        push.setData(JSONOK);
+
+
+                                       push.sendInBackground();
+
+                                        Log.e(TAG, "Enviados Push Comunidad" );
+
+
+                                        //paramos el prorgressdialog
+
+                                        setProgressBarIndeterminateVisibility(false);
+
+
+                                    } else {
+                                        Log.d("Comunidad", "Error: " + e.getMessage());
+                                    }
+                                }
+                            });
+
 
                         }
-
-
-                        // Find devices associated with these comunidades
-                        ParseQuery pushQuery = ParseInstallation.getQuery();
-                       // pushQuery.whereMatchesQuery("email", queryemailsdeComunidad);//asi no va porque el query es de la Class vecino !!nod e installation
-
-                        pushQuery.whereContainedIn("email",ListemailParaPushdesdeComunidad);
-
-
-
-                        // Send push notification to query
-                        ParsePush push = new ParsePush();
-                        push.setQuery(pushQuery); // Set our Installation query
-
-
-                       // push.setMessage(pushTosendText); lo mandamso como JSON
-
-
-                        JSONObject JSONOK= null;
-                        try {
-                            JSONOK = Text2Json(pushTosendText);
-                        } catch (JSONException e1) {
-                            e1.printStackTrace();
+                    })
+                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            // do nothing
                         }
-
-                        push.setData(JSONOK);
-
-
-                        push.sendInBackground();
-
-                        Log.e(TAG, "Enviados Push Comunidad" );
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
 
 
-                        //paramos el prorgressdialog
-
-                        setProgressBarIndeterminateVisibility(false);
 
 
-                    } else {
-                        Log.d("Comunidad", "Error: " + e.getMessage());
-                    }
-                }
-            });
+
+
+
+
+
         }
 
         else {

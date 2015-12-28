@@ -7,6 +7,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="@android:color/white"
     tools:context="com.mio.jrdv.pushsenderjrdvsoft.LoginActivity">
     <LinearLayout
         android:orientation="vertical"
@@ -23,7 +24,7 @@
 
         <ImageView
 
-            android:src="@drawable/logo7redondo"
+            android:src="@drawable/jrdvsoftlogo"
             android:id="@+id/LOGO"
             android:layout_width="wrap_content"
             android:layout_height="150dp"

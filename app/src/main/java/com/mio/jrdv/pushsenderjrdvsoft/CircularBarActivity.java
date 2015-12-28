@@ -13,8 +13,8 @@ public class CircularBarActivity  extends Activity {
 
 
         final  CircularProgressBar c3 = (CircularProgressBar) findViewById(R.id.circularprogressbar1);
-        c3.setTitle("GHFINCAS");
-        c3.setSubTitle("GHFINCAS");
+        c3.setTitle("JRDVSOFT");
+        c3.setSubTitle("JRDVSOFT");
         //c3.setProgress(42);
 
 
@@ -26,7 +26,7 @@ public class CircularBarActivity  extends Activity {
 
             @Override
             public void onAnimationProgress(int progress) {
-                c3.setTitle(progress + "%");
+                c3.setSubTitle(progress + "%");
             }
 
             @Override
